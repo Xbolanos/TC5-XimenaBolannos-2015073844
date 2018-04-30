@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -34,6 +35,10 @@ public class FlappyBird extends ApplicationAdapter {
 	Texture bottomTube;
 	Texture[] birds;
 	Texture gameOver;
+	Texture easy;
+	Texture medium;
+	Texture hard;
+
 	int birdState;
 	float gap;
 	float birdY;
@@ -61,13 +66,17 @@ public class FlappyBird extends ApplicationAdapter {
 	Sound soundfail;
 	Sound soundpoint;
 	Sound sound;
-	Sprite sprite;
+
 	private Stage stage;
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
 		stage = new Stage(new ScreenViewport());
+		easy=new Texture("easy.png");
+		medium=new Texture("medium.png");
+		hard=new Texture("hard.png");
+
 		background = new Texture("bg.png");
 		birds = new Texture[2];
 		birds[0] = new Texture("bird.png");
@@ -92,7 +101,7 @@ public class FlappyBird extends ApplicationAdapter {
 
 		region = new TextureRegion(birds[birdState],0,0,512,512);
 		region.flip(true, true);
-		game_state = 0;
+		game_state = 3;
 		gap = 500;
 		velocity = 0;
 		gravity = 0.5f;
@@ -252,11 +261,69 @@ public class FlappyBird extends ApplicationAdapter {
 			if (Gdx.input.justTouched()){
 
 				soundfailflag=0;
-				game_state = 1;
+				game_state = 3;
 				score = 0;
 				pipeActivo = 0;
 				velocity = 1;
-				startGame();
+
+
+			}
+		}
+		else if (game_state == 3){
+			batch.draw(easy, Gdx.graphics.getWidth()/2 - easy.getWidth()/2, Gdx.graphics.getHeight()/5 * 4 - easy.getHeight()/2);
+			batch.draw(medium, Gdx.graphics.getWidth()/2 - medium.getWidth()/2, Gdx.graphics.getHeight()/5 * 3 - medium.getHeight()/2);
+			batch.draw(hard, Gdx.graphics.getWidth()/2 - hard.getWidth()/2, Gdx.graphics.getHeight()/5 * 2 - hard.getHeight()/2);
+
+
+
+			if (Gdx.input.justTouched()){
+				int xeasy=Gdx.graphics.getWidth()/2 - easy.getWidth()/2;
+				int yeasy=Gdx.graphics.getHeight()/5  - easy.getHeight()/2;
+
+				int xmedium=Gdx.graphics.getWidth()/2 - medium.getWidth()/2;
+				int ymedium=Gdx.graphics.getHeight()/5 * 2 - medium.getHeight()/2;
+
+				int xhard=Gdx.graphics.getWidth()/2 - hard.getWidth()/2;
+				int yhard=Gdx.graphics.getHeight()/5 *3 - hard.getHeight()/2;
+
+				Vector3 tmp=new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
+
+
+
+
+				Rectangle textureBounds=new Rectangle(Gdx.graphics.getWidth()/2 - easy.getWidth()/2,Gdx.graphics.getHeight()/5 * 4 - easy.getHeight()/2, easy.getWidth(), easy.getHeight());
+				// texture x is the x position of the texture
+				// texture y is the y position of the texture
+				// texturewidth is the width of the texture (you can get it with texture.getWidth() or textureRegion.getRegionWidth() if you have a texture region
+				// textureheight is the height of the texture (you can get it with texture.getHeight() or textureRegion.getRegionhHeight() if you have a texture region
+
+				if (Gdx.input.getX() > xeasy && Gdx.input.getX()< xeasy+ easy.getWidth() && Gdx.input.getY() > yeasy && Gdx.input.getY()< yeasy+ easy.getHeight()) {
+					Gdx.app.log("LOGRADO","SI");
+					gap = 500;
+					velocity = 0;
+					gravity = 0.5f;
+					game_state = 1;
+					startGame();
+				}else{
+					if (Gdx.input.getX() > xmedium && Gdx.input.getX()< xmedium+ medium.getWidth() && Gdx.input.getY() > ymedium && Gdx.input.getY()< ymedium+ medium.getHeight()) {
+						Gdx.app.log("LOGRADO","SI/");
+						gap = 400;
+						velocity = 1;
+						gravity = 1f;
+						game_state = 1;
+						startGame();
+					}else{
+						if (Gdx.input.getX() > xhard && Gdx.input.getX()< xhard+ hard.getWidth() && Gdx.input.getY() > yhard && Gdx.input.getY()< yhard+ hard.getHeight()) {
+							Gdx.app.log("LOGRADO","SI//");
+							gap = 300;
+							velocity = 2;
+							gravity = 1.5f;
+							game_state = 1;
+							startGame();
+						}
+					}
+				}
+
 
 			}
 		}
@@ -265,11 +332,12 @@ public class FlappyBird extends ApplicationAdapter {
 		float originx=birds[birdState].getHeight()/2;
 	    batch.draw(new TextureRegion(birds[birdState]), Gdx.graphics.getWidth() / 2 - birds[birdState].getWidth()/2,  birdY,
 				originx,originy
-				,birds[birdState].getWidth() + birdSize,
-				birds[birdState].getHeight()+birdSize,0.5f,1, rotation, false);
+				,birds[birdState].getWidth(),
+				birds[birdState].getHeight(),0.7f,1.3f, rotation, false);
 		font.draw(batch, Integer.toString(score), Gdx.graphics.getWidth()*1/8, Gdx.graphics.getHeight()*9/10);
 
 		batch.end();
+
 
 	}
 	
